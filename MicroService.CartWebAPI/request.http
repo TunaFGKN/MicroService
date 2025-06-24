@@ -1,0 +1,6 @@
+﻿POST https://localhost:7053
+Content-Type: application/json
+{
+  "ProductId": "0197a0cb-010b-784d-bf45-8f4bfb6ef5a4",
+  "Quantity": 5
+}
