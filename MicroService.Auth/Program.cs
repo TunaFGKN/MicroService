@@ -1,5 +1,6 @@
 using MicroService.Auth.Dtos;
 using Scalar.AspNetCore;
+using TS.Result;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,9 +19,10 @@ app.MapPost("/login", async (LoginDto request, CancellationToken cancellationTok
     if(request.UserName == "admin" && request.Password == "password")
     {
         string token = ""; // Generate a JWT token here
-        return Results.Ok(new {Message = "Login successful", Token = token});
+        return Results.Ok(Result<string>.Succeed(token));
     }
-    return Results.BadRequest(new {Message = "Invalid credentials"});
+    string errorMessage = "Invalid username or password.";
+    return Results.BadRequest(Result<string>.Failure(400,errorMessage));
 });
 
 app.Run();
