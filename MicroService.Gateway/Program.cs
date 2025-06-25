@@ -12,8 +12,8 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
     var serviceProvider = builder.Services.BuildServiceProvider();
     using var scope = serviceProvider.CreateScope();
-    var jwtOptions = scope.ServiceProvider.GetRequiredService<IOptions<JwtOptions>>()
-    ;
+    var jwtOptions = scope.ServiceProvider.GetRequiredService<IOptions<JwtOptions>>();
+
     string secretKey = jwtOptions.Value.SecretKey;
     SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
 
@@ -28,10 +28,16 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
         IssuerSigningKey = securityKey
     };
 });
+builder.Services.AddAuthorization(opt =>
+{
+    opt.AddPolicy("ProxyAuth", p => p.RequireAuthenticatedUser());
+});
 
 var app = builder.Build();
 
+app.UseAuthentication();
+app.UseAuthorization();
+app.MapReverseProxy().RequireAuthorization();
 app.MapGet("/", () => "Hello World!");
-app.MapReverseProxy();
 
 app.Run();
