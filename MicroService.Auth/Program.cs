@@ -12,11 +12,12 @@ var app = builder.Build();
 app.MapDefaultEndpoints();
 app.MapOpenApi();
 app.MapScalarApiReference();
-app.MapGet("/", () => "Hello World!");
 app.MapPost("/login", async (LoginDto request, CancellationToken cancellationToken) =>
 {
+    await Task.Delay(100, cancellationToken);
+
     // Simulate some processing
-    if(request.UserName == "admin" && request.Password == "password")
+    if (request.UserName == "admin" && request.Password == "password")
     {
         string token = ""; // Generate a JWT token here
         return Results.Ok(Result<string>.Succeed(token));
