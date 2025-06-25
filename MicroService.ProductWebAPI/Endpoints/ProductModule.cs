@@ -13,7 +13,9 @@ namespace MicroService.ProductWebAPI.Endpoints
                 // This is a placeholder for the product endpoint.
                 List<Product> products = new List<Product>
                 {
-                    new Product { Name = "Tomato" }
+                    new Product { Name = "Tomato", Stock = 100 },
+                    new Product { Name = "Carrot", Stock = 50 },
+                    new Product { Name = "Apple", Stock = 15 }
                 };
                 return Results.Ok(products);
             });
@@ -22,7 +24,7 @@ namespace MicroService.ProductWebAPI.Endpoints
             {
                Product product = new Product
                 {
-                    // Id = id,
+                    Id = id,
                     Name = "Potato",
                     Stock = 5
                };

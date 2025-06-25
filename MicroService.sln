@@ -13,6 +13,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroService.AppHost", "Mic
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroService.ServiceDefaults", "MicroService.ServiceDefaults\MicroService.ServiceDefaults.csproj", "{D2283B1D-F315-2FDC-CAD7-EC7C12D1BFA6}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroService.Auth", "MicroService.Auth\MicroService.Auth.csproj", "{9368CC99-5099-A435-243F-4F48952390FF}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -39,6 +41,10 @@ Global
 		{D2283B1D-F315-2FDC-CAD7-EC7C12D1BFA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D2283B1D-F315-2FDC-CAD7-EC7C12D1BFA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D2283B1D-F315-2FDC-CAD7-EC7C12D1BFA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9368CC99-5099-A435-243F-4F48952390FF}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9368CC99-5099-A435-243F-4F48952390FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9368CC99-5099-A435-243F-4F48952390FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9368CC99-5099-A435-243F-4F48952390FF}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
