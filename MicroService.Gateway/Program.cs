@@ -37,7 +37,7 @@ var app = builder.Build();
 
 app.UseAuthentication();
 app.UseAuthorization();
-app.MapReverseProxy().RequireAuthorization();
+app.MapReverseProxy(); // .RequireAuthorization(); Depricated 
 app.MapGet("/", () => "Hello World!");
 
 app.Run();
