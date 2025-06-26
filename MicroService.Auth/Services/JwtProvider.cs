@@ -1,6 +1,7 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using MicroService.Auth.DTOs;
 using MicroService.Auth.Options;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -9,7 +10,7 @@ namespace MicroService.Auth.Services;
 
 public sealed class JwtProvider(IOptions<JwtOptions> jwtOptions)
 {
-    public string GenerateToken()
+    public LoginResponseDto GenerateToken()
     {
         List<Claim> claims = new List<Claim>
         {
@@ -19,6 +20,9 @@ public sealed class JwtProvider(IOptions<JwtOptions> jwtOptions)
         };
 
         string secretKey = jwtOptions.Value.SecretKey;
+        string refreshToken = Guid.CreateVersion7().ToString();
+        DateTime expires = DateTime.Now.AddDays(1);
+
         SymmetricSecurityKey securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
         SigningCredentials signingCredentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
@@ -26,13 +30,14 @@ public sealed class JwtProvider(IOptions<JwtOptions> jwtOptions)
             issuer: jwtOptions.Value.Issuer,
             audience: jwtOptions.Value.Audience,
             claims: claims,
-            expires: DateTime.Now.AddDays(1),
+            expires: expires,
             signingCredentials: signingCredentials
         );
 
         JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
         string token = handler.WriteToken(jwtSecurity);
 
-        return token;
+        LoginResponseDto response = new(token, refreshToken, expires.AddDays(1));        
+        return response;
     }
 }

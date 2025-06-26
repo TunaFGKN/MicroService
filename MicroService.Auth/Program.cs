@@ -23,7 +23,7 @@ app.MapPost("/login", async (LoginDto request, JwtProvider jwtProvider, Cancella
     // Simulate some processing
     if (request.UserName == "admin" && request.Password == "password")
     {
-        string token = jwtProvider.GenerateToken();
+        string token = jwtProvider.GenerateToken().Token;
         return Results.Ok(Result<string>.Succeed(token));
     }
     string errorMessage = "Invalid username or password.";
