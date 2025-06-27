@@ -8,6 +8,7 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.Services.AddOpenApi();
+builder.Services.AddHttpContextAccessor();
 builder.Services.AddScoped<JwtProvider>();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 
@@ -16,6 +17,13 @@ var app = builder.Build();
 app.MapDefaultEndpoints();
 app.MapOpenApi();
 app.MapScalarApiReference();
+
+app.MapGet("/get-connection-string", (IConfiguration configuration) =>
+{
+    string connectionString = configuration.GetConnectionString("SqlServer") ?? "Empty";
+    return Results.Ok(Result<string>.Succeed(connectionString));
+});
+
 app.MapPost("/login", async (LoginDto request, JwtProvider jwtProvider, CancellationToken cancellationToken) =>
 {
     await Task.Delay(100, cancellationToken);
