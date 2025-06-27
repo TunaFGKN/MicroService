@@ -10,14 +10,18 @@ namespace MicroService.Auth.Services;
 
 public sealed class JwtProvider(IOptions<JwtOptions> jwtOptions)
 {
-    public LoginResponseDto GenerateToken()
+    public LoginResponseDto GenerateToken(Guid userId, string userName, List<string> roles)
     {
         List<Claim> claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, Guid.CreateVersion7().ToString()),
-            new Claim(ClaimTypes.Name, "Taner Saydam")
-            // new Claim(ClaimTypes.Role, "Administrator")
+            new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
+            new Claim(ClaimTypes.Name, userName)
         };
+
+        foreach (var role in roles)
+        {
+            claims.Add(new Claim(ClaimTypes.Role, role));
+        }
 
         string secretKey = jwtOptions.Value.SecretKey;
         string refreshToken = Guid.CreateVersion7().ToString();
