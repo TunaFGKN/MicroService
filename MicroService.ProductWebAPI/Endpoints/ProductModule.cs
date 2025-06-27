@@ -1,4 +1,7 @@
-﻿using MicroService.ProductWebAPI.Models;
+﻿using MicroService.ProductWebAPI.Context;
+using MicroService.ProductWebAPI.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.EntityFrameworkCore;
 
 namespace MicroService.ProductWebAPI.Endpoints;
 
@@ -8,28 +11,58 @@ public static class ProductModule
     {
         var group = app.MapGroup(string.Empty);
 
-        group.MapGet(string.Empty, () =>
-        {
-            // This is a placeholder for the product endpoint.
-            List<Product> products = new List<Product>
-            {
-                new Product { Name = "Tomato", Stock = 100 },
-                new Product { Name = "Carrot", Stock = 50 },
-                new Product { Name = "Apple", Stock = 15 }
-            };
+        group.MapGet(string.Empty, async (ProductDbContext db, CancellationToken cancellationToken) =>
+        {          
+            var products = await db.Products.ToListAsync(cancellationToken);
             return Results.Ok(products);
         });
 
-        group.MapGet("{id}", (Guid id) =>
+        group.MapGet("{id}", async (Guid id, ProductDbContext db, CancellationToken cancellationToken) =>
         {
-           Product product = new Product
-            {
-                Id = id,
-                Name = "Potato",
-                Stock = 5
-           };
+           var product = await db.Products.FirstOrDefaultAsync(p => p.Id == id, cancellationToken);
             return Results.Ok(product);
         });
+
+        group.MapPost("add", async (Product product, ProductDbContext db, CancellationToken cancellationToken) =>
+        {
+            if (product == null)
+            {
+                return Results.BadRequest("Product cannot be null.");
+            }
+            product.Id = Guid.CreateVersion7();
+            db.Products.Add(product);
+            await db.SaveChangesAsync(cancellationToken);
+            return Results.Created($"/products/{product.Id}", product);
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,Seller" });
+
+        group.MapPut("update/{id}", async (Guid id, Product product, ProductDbContext db, CancellationToken cancellationToken) =>
+        {
+            if (product == null || product.Id != id)
+            {
+                return Results.BadRequest("Product cannot be null and ID must match.");
+            }
+            var existingProduct = await db.Products.FindAsync(new object[] { id }, cancellationToken);
+            if (existingProduct == null)
+            {
+                return Results.NotFound($"Product with ID {id} not found.");
+            }
+            existingProduct.Name = product.Name;
+            existingProduct.Stock = product.Stock;
+            await db.SaveChangesAsync(cancellationToken);
+            return Results.Ok(existingProduct);
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,Seller" });
+
+        group.MapDelete("delete/{id}", async (Guid id, ProductDbContext db, CancellationToken cancellationToken) =>
+        {
+            var product = await db.Products.FindAsync(new object[] { id }, cancellationToken);
+            if (product == null)
+            {
+                return Results.NotFound($"Product with ID {id} not found.");
+            }
+            db.Products.Remove(product);
+            await db.SaveChangesAsync(cancellationToken);
+            return Results.NoContent();
+        }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,Seller" });
 
         return app;
     }

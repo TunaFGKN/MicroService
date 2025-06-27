@@ -1,6 +1,8 @@
 using System.Text;
+using MicroService.ProductWebAPI.Context;
 using MicroService.ProductWebAPI.Endpoints;
 using MicroService.ProductWebAPI.Options;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 
@@ -10,6 +12,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddDbContext<ProductDbContext>(options => {options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));});
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
     ServiceProvider serviceProvider = builder.Services.BuildServiceProvider();
@@ -35,6 +38,9 @@ builder.Services.AddAuthorization();
 var app = builder.Build();
 
 // Middleware Configuration (Minimal API)
+app.UseRouting();
+app.UseAuthorization();
+// app.UseEndpoints();
 app.MapProducts();
 
 app.Run();
