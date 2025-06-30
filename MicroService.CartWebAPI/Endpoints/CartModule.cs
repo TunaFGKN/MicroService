@@ -56,7 +56,6 @@ public static class CartModule
             return Results.Ok(carts);
         });
 
-        // Sepet detay getirme
         group.MapGet("{id}", async (Guid id, CartDbContext db, CancellationToken cancellationToken) =>
         {
             var cart = await db.Carts.Include(c => c.Items)
@@ -65,7 +64,6 @@ public static class CartModule
             return cart is null ? Results.NotFound() : Results.Ok(cart);
         });
 
-        // SEPET SİLME
         group.MapDelete("{id}", async (Guid id, CartDbContext db, CancellationToken cancellationToken) =>
         {
             var cart = await db.Carts.Include(c => c.Items)
@@ -80,7 +78,6 @@ public static class CartModule
             return Results.NoContent();
         });
 
-        // SEPET GÜNCELLEME (Sadece ürün listesi güncellenir)
         group.MapPut("{id}", async (Guid id, UpdateCartDto dto, CartDbContext db, HttpClient httpClient, CancellationToken cancellationToken) =>
         {
             var cart = await db.Carts.Include(c => c.Items)
@@ -89,7 +86,6 @@ public static class CartModule
             if (cart is null)
                 return Results.NotFound();
 
-            // Stok kontrolü
             foreach (var item in dto.Items)
             {
                 var response = await httpClient.GetAsync($"https://localhost:7210/{item.ProductId}", cancellationToken);
@@ -103,7 +99,6 @@ public static class CartModule
                     return Results.BadRequest($"Insufficient stock for product: {item.ProductId}");
             }
 
-            // Eski ürünleri sil, yenileri ekle
             db.CartItems.RemoveRange(cart.Items);
 
             cart.Items = dto.Items.Select(i => new CartItem
