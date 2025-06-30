@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroService.ServiceDefault
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroService.Auth", "MicroService.Auth\MicroService.Auth.csproj", "{9368CC99-5099-A435-243F-4F48952390FF}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MicroService.OrderWebAPI", "MicroService.OrderWebAPI\MicroService.OrderWebAPI.csproj", "{4112DC1B-CAE7-D574-A43C-8890236F7A5A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -45,6 +47,10 @@ Global
 		{9368CC99-5099-A435-243F-4F48952390FF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9368CC99-5099-A435-243F-4F48952390FF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9368CC99-5099-A435-243F-4F48952390FF}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4112DC1B-CAE7-D574-A43C-8890236F7A5A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4112DC1B-CAE7-D574-A43C-8890236F7A5A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4112DC1B-CAE7-D574-A43C-8890236F7A5A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4112DC1B-CAE7-D574-A43C-8890236F7A5A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
