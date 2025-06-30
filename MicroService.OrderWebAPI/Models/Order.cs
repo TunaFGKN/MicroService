@@ -13,7 +13,7 @@ public class Order
     public Guid? CartId { get; set; }
 
     [Column(TypeName = "decimal(18,2)")]
-    public decimal TotalPrice { get; set; }
+    public decimal TotalPrice { get; set; } = decimal.Zero;
 
     [Required]
     [MaxLength(50)]
@@ -23,4 +23,5 @@ public class Order
     public string Address { get; set; } = string.Empty; // JSON string
 
     public DateTime OrderedAt { get; set; } = DateTime.UtcNow;
+    public string Status { get; set; }
 }

@@ -2,6 +2,7 @@ using System.Text;
 using MicroService.OrderAPI.Context;
 using MicroService.OrderWebAPI.Endpoints;
 using MicroService.OrderWebAPI.Options;
+using MicroService.OrderWebAPI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -36,6 +37,7 @@ builder.Services.AddAuthentication().AddJwtBearer(options =>
     };
 });
 builder.Services.AddAuthorization();
+builder.Services.AddScoped<IOrderService, OrderService>();
 
 var app = builder.Build();
 
