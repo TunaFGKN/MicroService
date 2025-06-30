@@ -1,15 +1,9 @@
-using MicroService.Auth.Dtos;
-using MicroService.Auth.DTOs;
 using MicroService.Auth.Endpoints;
-using MicroService.Auth.Models.UserRoles;
-using MicroService.Auth.Models.Users;
 using MicroService.Auth.Options;
 using MicroService.Auth.Services;
 using MicroService.AuthWebAPI.Data;
-using MicroService.AuthWebAPI.Helpers;
 using Microsoft.EntityFrameworkCore;
 using Scalar.AspNetCore;
-using TS.Result;
 
 var builder = WebApplication.CreateBuilder(args);
 

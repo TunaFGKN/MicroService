@@ -40,7 +40,7 @@ var app = builder.Build();
 // Middleware Configuration (Minimal API)
 app.UseRouting();
 app.UseAuthorization();
-// app.UseEndpoints();
+
 app.MapProducts();
 
 app.Run();

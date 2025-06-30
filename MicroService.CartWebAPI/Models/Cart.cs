@@ -2,6 +2,9 @@
 
 public sealed class Cart
 {
-    public int Id { get; set; } // We use int for the cart id to keep it simple, but you can use Guid if you prefer.
-    public Guid ProductId { get; set; }
+    public Guid Id { get; set; }
+    public Guid UserId { get; set; }
+    public DateTime CreatedDate { get; set; } = DateTime.UtcNow;
+    public DateTime? UpdatedDate { get; set; }
+    public ICollection<CartItem> Items { get; set; } = new List<CartItem>();
 }
