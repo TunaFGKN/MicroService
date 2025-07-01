@@ -1,4 +1,6 @@
-﻿using MicroService.ProductWebAPI.Context;
+﻿using FluentValidation;
+using FluentValidation.Results;
+using MicroService.ProductWebAPI.Context;
 using MicroService.ProductWebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
@@ -23,11 +25,12 @@ public static class ProductModule
             return Results.Ok(product);
         });
 
-        group.MapPost("add", async (Product product, ProductDbContext db, CancellationToken cancellationToken) =>
+        group.MapPost("add", async (Product product, ProductDbContext db, IValidator<Product> validator, CancellationToken cancellationToken) =>
         {
-            if (product == null)
+            ValidationResult validationResult = await validator.ValidateAsync(product, cancellationToken);
+            if (!validationResult.IsValid)
             {
-                return Results.BadRequest("Product cannot be null.");
+                return Results.BadRequest(validationResult.Errors.Select(e => e.ErrorMessage));
             }
             product.Id = Guid.CreateVersion7();
             db.Products.Add(product);

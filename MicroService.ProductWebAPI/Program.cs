@@ -1,7 +1,10 @@
 using System.Text;
+using FluentValidation;
 using MicroService.ProductWebAPI.Context;
 using MicroService.ProductWebAPI.Endpoints;
+using MicroService.ProductWebAPI.Models;
 using MicroService.ProductWebAPI.Options;
+using MicroService.ProductWebAPI.Validation;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -13,6 +16,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.AddServiceDefaults();
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IValidator<Product>, ProductValidator>();
 builder.Services.AddOpenApi();
 builder.Services.AddDbContext<ProductDbContext>(options => {options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));});
 builder.Services.AddAuthentication().AddJwtBearer(options =>

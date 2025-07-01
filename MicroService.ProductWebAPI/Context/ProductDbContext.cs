@@ -1,9 +1,10 @@
 ﻿using MicroService.ProductWebAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using Shared.Abstract;
 
 namespace MicroService.ProductWebAPI.Context;
 
-public class ProductDbContext : DbContext
+public class ProductDbContext :  DbContext, IContext
 {
     public ProductDbContext(DbContextOptions<ProductDbContext> options) : base(options) { }
     public DbSet<Product> Products { get; set; } = default!;
