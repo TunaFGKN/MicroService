@@ -1,4 +1,6 @@
-﻿namespace MicroService.CartWebAPI.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace MicroService.CartWebAPI.Models;
 
 public class CartItem
 {
@@ -8,5 +10,7 @@ public class CartItem
     public int Quantity { get; set; }
     public DateTime CreatedDate { get; set; } = default!;
     public DateTime? UpdatedDate { get; set; }
+    
+    [JsonIgnore]
     public Cart Cart { get; set; } = default!;
 }
