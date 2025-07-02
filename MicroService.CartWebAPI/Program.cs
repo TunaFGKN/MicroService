@@ -2,6 +2,7 @@ using System.Text;
 using MicroService.CartWebAPI.Context;
 using MicroService.CartWebAPI.Endpoints;
 using MicroService.CartWebAPI.Options;
+using MicroService.CartWebAPI.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
@@ -11,10 +12,11 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.AddServiceDefaults();
 builder.Services.AddHttpClient();
-builder.Services.AddDbContext<CartDbContext>(options => { options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")); });
 builder.Services.AddOpenApi();
-builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<ICartService, CartService>();
+builder.Services.AddDbContext<CartDbContext>(options => { options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")); });
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
     ServiceProvider serviceProvider = builder.Services.BuildServiceProvider();

@@ -1,6 +1,8 @@
-﻿namespace MicroService.CartWebAPI.Models;
+﻿using Shared.Abstract;
 
-public sealed class Cart
+namespace MicroService.CartWebAPI.Models;
+
+public sealed class Cart: IEntity
 {
     public Guid Id { get; set; }
     public Guid UserId { get; set; }

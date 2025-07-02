@@ -1,9 +1,9 @@
 ﻿using MicroService.Auth.Models.UserRoles;
-using Microsoft.AspNetCore.Identity;
+using Shared.Abstract;
 
 namespace MicroService.Auth.Models.Users;
 
-public class User 
+public class User : IEntity
 {
     public Guid Id { get; set; } = Guid.CreateVersion7();
     public string UserName { get; set; } = default!;

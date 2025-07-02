@@ -1,9 +1,10 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Shared.Abstract;
 
 namespace MicroService.OrderAPI.Models;
 
-public class Order
+public class Order: IEntity
 {
     [Key]
     public Guid Id { get; set; } = Guid.NewGuid();

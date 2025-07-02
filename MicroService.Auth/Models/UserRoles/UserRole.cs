@@ -1,10 +1,10 @@
 ﻿using MicroService.Auth.Models.Roles;
 using MicroService.Auth.Models.Users;
-using Microsoft.AspNetCore.Identity;
+using Shared.Abstract;
 
 namespace MicroService.Auth.Models.UserRoles;
 
-public class UserRole
+public class UserRole: IEntity
 {
     public Guid UserId { get; set; }
     public Guid RoleId { get; set; }

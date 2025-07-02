@@ -24,10 +24,6 @@ public class ProductValidator: AbstractValidator<Product>
 
     public bool UniqueName(Product product, string name)
     {
-        if (_context.Products.Where(x => x.Name.ToLower() == name.ToLower()) != null)
-        {
-            return false;
-        }
-        return true;
+        return !_context.Products.Any(x => x.Name.ToLower() == name.ToLower());
     }
 }

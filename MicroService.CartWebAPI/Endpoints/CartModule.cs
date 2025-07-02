@@ -1,6 +1,7 @@
 ﻿using MicroService.CartWebAPI.Context;
 using MicroService.CartWebAPI.DTOs;
 using MicroService.CartWebAPI.Models;
+using MicroService.CartWebAPI.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,108 +14,34 @@ public static class CartModule
         var group = app.MapGroup(string.Empty);
         group.RequireAuthorization(new AuthorizeAttribute { Roles = "User,Admin"});
 
-        group.MapPost(string.Empty, async (CreateCartDto dto, CartDbContext db, HttpClient httpClient, CancellationToken cancellationToken) =>
+        group.MapPost(string.Empty, async (CreateCartDto dto, ICartService cartService, CancellationToken cancellationToken) =>
         {
-            foreach (var item in dto.Items)
-            {
-                var response = await httpClient.GetAsync($"https://localhost:7210/{item.ProductId}", cancellationToken);
-
-                if (!response.IsSuccessStatusCode)
-                    return Results.BadRequest($"Product with ID {item.ProductId} not found.");
-
-                var product = await response.Content.ReadFromJsonAsync<ProductDto>(cancellationToken: cancellationToken);
-
-                if (product == null || product.Stock < item.Quantity)
-                    return Results.BadRequest($"Insufficient stock for product: {item.ProductId}");
-            }
-
-            var cart = new Cart
-            {
-                Id = Guid.CreateVersion7(),
-                UserId = dto.UserId,
-                CreatedDate = DateTime.UtcNow,
-                UpdatedDate = DateTime.UtcNow,
-                Items = dto.Items.Select(i => new CartItem
-                {
-                    Id = Guid.CreateVersion7(),
-                    ProductId = i.ProductId,
-                    Quantity = i.Quantity,
-                    CreatedDate = DateTime.UtcNow,
-                    UpdatedDate = DateTime.UtcNow
-                }).ToList()
-            };
-           
-            db.Carts.Add(cart);
-            await db.SaveChangesAsync(cancellationToken);
-
-            return Results.Created();
+            var result = await cartService.CreateCartAsync(dto, cancellationToken);
+            return result.IsSuccessful ? Results.Created() : Results.BadRequest(result.ErrorMessages);
         });
 
-        group.MapGet(string.Empty, async (CartDbContext db, CancellationToken cancellationToken) =>
+        group.MapGet(string.Empty, async (ICartService cartService, CancellationToken cancellationToken) =>
         {
-            var carts = await db.Carts.Include(c => c.Items).ToListAsync(cancellationToken);
-            return Results.Ok(carts);
+            var result = await cartService.GetAllCartsAsync(cancellationToken);
+            return result.IsSuccessful ? Results.Ok(result.Data) : Results.BadRequest(result.ErrorMessages);
         });
 
-        group.MapGet("{id}", async (Guid id, CartDbContext db, CancellationToken cancellationToken) =>
+        group.MapGet("{id}", async (Guid id, ICartService cartService, CancellationToken cancellationToken) =>
         {
-            var cart = await db.Carts.Include(c => c.Items)
-                                     .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
-
-            return cart is null ? Results.NotFound() : Results.Ok(cart);
+            var result = await cartService.GetCartByIdAsync(id, cancellationToken);
+            return result is null ? Results.NotFound() : Results.Ok(result);
         });
 
-        group.MapDelete("{id}", async (Guid id, CartDbContext db, CancellationToken cancellationToken) =>
+        group.MapDelete("{id}", async (Guid id, ICartService cartService, CancellationToken cancellationToken) =>
         {
-            var cart = await db.Carts.Include(c => c.Items)
-                                     .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
-
-            if (cart is null)
-                return Results.NotFound();
-
-            db.Carts.Remove(cart);
-            await db.SaveChangesAsync(cancellationToken);
-
-            return Results.NoContent();
+            var result = await cartService.DeleteCartAsync(id, cancellationToken);
+            return result.Data ? Results.NoContent() : Results.NotFound();
         });
 
-        group.MapPut("{id}", async (Guid id, UpdateCartDto dto, CartDbContext db, HttpClient httpClient, CancellationToken cancellationToken) =>
+        group.MapPut("{id}", async (Guid id, UpdateCartDto dto, ICartService cartService, CancellationToken cancellationToken) =>
         {
-            var cart = await db.Carts.Include(c => c.Items)
-                                     .FirstOrDefaultAsync(c => c.Id == id, cancellationToken);
-
-            if (cart is null)
-                return Results.NotFound();
-
-            foreach (var item in dto.Items)
-            {
-                var response = await httpClient.GetAsync($"https://localhost:7210/{item.ProductId}", cancellationToken);
-
-                if (!response.IsSuccessStatusCode)
-                    return Results.BadRequest($"Product with ID {item.ProductId} not found.");
-
-                var product = await response.Content.ReadFromJsonAsync<ProductDto>(cancellationToken: cancellationToken);
-
-                if (product == null || product.Stock < item.Quantity)
-                    return Results.BadRequest($"Insufficient stock for product: {item.ProductId}");
-            }
-
-            db.CartItems.RemoveRange(cart.Items);
-
-            cart.Items = dto.Items.Select(i => new CartItem
-            {
-                Id = Guid.CreateVersion7(),
-                ProductId = i.ProductId,
-                Quantity = i.Quantity,
-                CreatedDate = DateTime.UtcNow,
-                UpdatedDate = DateTime.UtcNow
-            }).ToList();
-
-            cart.UpdatedDate = DateTime.UtcNow;
-
-            await db.SaveChangesAsync(cancellationToken);
-
-            return Results.Ok(cart);
+            var result = await cartService.UpdateCartAsync(id, dto, cancellationToken);
+            return result.IsSuccessful ? Results.Ok(result.Data) : Results.BadRequest(result.ErrorMessages);
         });
 
         return app;

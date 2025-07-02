@@ -1,8 +1,9 @@
 ﻿using System.Text.Json.Serialization;
+using Shared.Abstract;
 
 namespace MicroService.CartWebAPI.Models;
 
-public class CartItem
+public class CartItem: IEntity
 {
     public Guid Id { get; set; }
     public Guid CartId { get; set; }

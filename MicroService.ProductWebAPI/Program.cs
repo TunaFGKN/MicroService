@@ -9,15 +9,17 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using Scalar.AspNetCore;
+using Shared.Events.RabbitMQ;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Service Registrations (Dependency Injection)
 builder.AddServiceDefaults();
-builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddScoped<IValidator<Product>, ProductValidator>();
 builder.Services.AddOpenApi();
+builder.Services.AddScoped<IValidator<Product>, ProductValidator>();
+builder.Services.AddSingleton<IMessagePublisher, RabbitMqService>();
+builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
 builder.Services.AddDbContext<ProductDbContext>(options => {options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));});
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
@@ -48,7 +50,6 @@ app.UseRouting();
 app.UseAuthorization();
 app.MapOpenApi();
 app.MapScalarApiReference();
-
 app.MapProducts();
 
 app.Run();

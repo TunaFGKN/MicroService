@@ -4,6 +4,7 @@ using MicroService.ProductWebAPI.Context;
 using MicroService.ProductWebAPI.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.EntityFrameworkCore;
+using Shared.Events.RabbitMQ;
 
 namespace MicroService.ProductWebAPI.Endpoints;
 
@@ -55,7 +56,7 @@ public static class ProductModule
             return Results.Ok(existingProduct);
         }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,Seller" });
 
-        group.MapDelete("delete/{id}", async (Guid id, ProductDbContext db, CancellationToken cancellationToken) =>
+        group.MapDelete("delete/{id}", async (Guid id, ProductDbContext db, IMessagePublisher publisher, CancellationToken cancellationToken) =>
         {
             var product = await db.Products.FindAsync(new object[] { id }, cancellationToken);
             if (product == null)
@@ -64,6 +65,8 @@ public static class ProductModule
             }
             db.Products.Remove(product);
             await db.SaveChangesAsync(cancellationToken);
+            var productDeletedEvent = new ProductDeletedEvent{ ProductId = id, ProductName = product.Name, DeletedAt = DateTime.UtcNow, DeletedBy = "system" };
+            await publisher.PublishAsync(productDeletedEvent, "product.deleted");
             return Results.NoContent();
         }).RequireAuthorization(new AuthorizeAttribute { Roles = "Admin,Seller" });
 
