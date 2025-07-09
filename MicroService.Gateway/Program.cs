@@ -11,6 +11,7 @@ builder.AddServiceDefaults();
 builder.Services.AddOpenApi();
 builder.Services.AddReverseProxy().LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("Jwt"));
+builder.Services.AddCors(options => { options.AddPolicy("AllowAngularClient", policy => { policy.WithOrigins("http://localhost:4200").AllowAnyHeader().AllowAnyMethod(); }); });
 builder.Services.AddAuthentication().AddJwtBearer(options =>
 {
     var serviceProvider = builder.Services.BuildServiceProvider();
@@ -38,6 +39,7 @@ builder.Services.AddAuthorization(opt =>
 
 var app = builder.Build();
 
+app.UseCors("AllowAngularClient");
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapReverseProxy(); // .RequireAuthorization(); Depricated 
