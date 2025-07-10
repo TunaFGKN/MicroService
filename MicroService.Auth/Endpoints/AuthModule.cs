@@ -55,6 +55,7 @@ public static class AuthModule
 
             var roles = user.UserRoles.Select(ur => ur.Role.Name).ToList();
             var token = jwtProvider.GenerateToken(user.Id, user.UserName, roles);
+            
             return Results.Ok(Result<LoginResponseDto>.Succeed(token));
         });
 

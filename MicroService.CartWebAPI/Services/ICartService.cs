@@ -13,4 +13,6 @@ public interface ICartService
     Task<Result<Cart>> UpdateCartAsync(Guid id, UpdateCartDto dto, CancellationToken cancellationToken);
     Task<Result<List<Cart>>> GetCartsByProductIdAsync(Guid productId, CancellationToken cancellationToken);
     Task<Result<bool>> RemoveProductFromCartAsync(Guid productId);
+    public Task<Cart?> GetCartByUserIdAsync(Guid userId, CancellationToken cancellationToken);
+
 }

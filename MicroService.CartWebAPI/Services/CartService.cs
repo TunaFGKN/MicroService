@@ -2,6 +2,7 @@
 using MicroService.CartWebAPI.DTOs;
 using MicroService.CartWebAPI.Models;
 using Microsoft.EntityFrameworkCore;
+using Shared.Abstract;
 using TS.Result;
 
 namespace MicroService.CartWebAPI.Services;
@@ -121,5 +122,12 @@ public class CartService: ICartService
     public async Task<Result<bool>> RemoveProductFromCartAsync(Guid productId)
     {
         return null;
+    }
+
+    public async Task<Cart?> GetCartByUserIdAsync(Guid userId, CancellationToken cancellationToken)
+    {
+        return await _db.Carts
+            .Include(c => c.Items)
+            .FirstOrDefaultAsync(c => c.UserId == userId, cancellationToken);
     }
 }

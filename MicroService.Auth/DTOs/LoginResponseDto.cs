@@ -3,5 +3,6 @@
 public sealed record LoginResponseDto(
     string Token,
     string RefreshToken,
-    DateTime Expiration
+    DateTime Expiration,
+    Guid UserId
 );

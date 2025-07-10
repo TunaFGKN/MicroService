@@ -41,7 +41,7 @@ public sealed class JwtProvider(IOptions<JwtOptions> jwtOptions)
         JwtSecurityTokenHandler handler = new JwtSecurityTokenHandler();
         string token = handler.WriteToken(jwtSecurity);
 
-        LoginResponseDto response = new(token, refreshToken, expires.AddDays(1));        
+        LoginResponseDto response = new(token, refreshToken, expires.AddDays(1), userId);        
         return response;
     }
 }

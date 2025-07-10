@@ -32,6 +32,13 @@ public static class CartModule
             return result is null ? Results.NotFound() : Results.Ok(result);
         });
 
+        group.MapGet("/user/{userId}", async (Guid userId, ICartService cartService, CancellationToken cancellationToken) =>
+        {
+            var result = await cartService.GetCartByUserIdAsync(userId, cancellationToken);
+            return result is null ? Results.NotFound() : Results.Ok(result);
+        });
+
+
         group.MapDelete("{id}", async (Guid id, ICartService cartService, CancellationToken cancellationToken) =>
         {
             var result = await cartService.DeleteCartAsync(id, cancellationToken);
